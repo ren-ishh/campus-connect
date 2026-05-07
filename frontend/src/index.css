@@ -32,3 +32,8 @@ button:hover {
   transform: translateY(-1px);
   filter: brightness(1.1);
 }
+
+@keyframes glowBorder {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
