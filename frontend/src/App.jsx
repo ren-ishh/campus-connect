@@ -1,27 +1,51 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Home, Users, Calendar, MessageSquare, Search, Bell, Heart, MessageCircle, Share2, Play, User, MoreHorizontal } from 'lucide-react'
+import WaveBackground from './components/WaveBackground'
 
-const AuroraBackground = () => (
-  <div className="aurora-bg">
-    <div className="aurora-wave"></div>
-    {[...Array(25)].map((_, i) => (
-      <div 
-        key={i} 
-        className="star" 
-        style={{ 
-          top: `${Math.random() * 100}%`, 
-          left: `${Math.random() * 100}%`,
-          width: `${Math.random() * 3}px`,
-          height: `${Math.random() * 3}px`,
-          boxShadow: `0 0 ${Math.random() * 10}px white`,
-          animationDelay: `${Math.random() * 5}s`,
-          animation: 'pulse 3s infinite'
-        }}
-      ></div>
-    ))}
-  </div>
-)
+const AuroraBackground = () => {
+  useEffect(() => {
+    const container = document.getElementById('aurora-container');
+    if (!container) return;
+    const stars = container.querySelectorAll('.star');
+    const handleMouseMove = (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 40;
+      const y = (e.clientY / window.innerHeight - 0.5) * 20;
+      stars.forEach((star, i) => {
+        const factor = (i % 3) + 1; // Different speeds for depth
+        star.style.transform = `translate(${x * factor}px, ${y * factor}px)`;
+      });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  return (
+    <div id="aurora-container" className="aurora-bg">
+      <div className="aurora-wave"></div>
+      {[...Array(30)].map((_, i) => {
+        const color = ["#00F5FF", "#FF00E5", "#8A2BE2"][Math.floor(Math.random() * 3)];
+        return (
+          <div 
+            key={i} 
+            className="star" 
+            style={{ 
+              top: `${Math.random() * 100}%`, 
+              left: `${Math.random() * 100}%`,
+              width: `${Math.random() * 4 + 2}px`,
+              height: `${Math.random() * 4 + 2}px`,
+              background: color,
+              color: color,
+              boxShadow: `0 0 ${5 + Math.random() * 20}px currentColor`,
+              animationDelay: `${Math.random() * 5}s`,
+              animation: 'pulse 3s infinite'
+            }}
+          ></div>
+        );
+      })}
+    </div>
+  )
+}
 
 const AmorphicGlass = ({ children, className, delay = 0 }) => (
   <motion.div 
@@ -41,7 +65,7 @@ const Sidebar = () => (
       <div className="p-3 rounded-2xl bg-white/10 text-neon-cyan neon-glow-cyan cursor-pointer transition-all hover:scale-110">
         <Home size={28} />
       </div>
-      <Users size={28} className="text-white/40 hover:text-white transition-all hover:scale-110 cursor-pointer" />
+      <Users size={28} className="text-neon-cyan neon-glow-cyan transition-all hover:scale-110 cursor-pointer" />
       <Calendar size={28} className="text-white/40 hover:text-white transition-all hover:scale-110 cursor-pointer" />
       <MessageSquare size={28} className="text-white/40 hover:text-white transition-all hover:scale-110 cursor-pointer" />
       <div className="mt-12 flex flex-col items-center gap-6">
@@ -83,7 +107,12 @@ const PostCard = ({ type, user, time, content, image, tags, poll, delay, gridIma
     <div className="flex justify-between items-start mb-6">
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-neon-cyan to-neon-violet border border-white/20 overflow-hidden">
-          <img src={`https://i.pravatar.cc/150?u=${user}`} alt={user} />
+          <img 
+            src={`https://i.pravatar.cc/150?u=${user}`} 
+            alt={user} 
+            loading="lazy"
+            onError={(e) => { e.target.src = `https://via.placeholder.com/150/0A0A0C/39FF14?text=${user.charAt(0)}` }}
+          />
         </div>
         <div>
           <h4 className="text-base font-bold text-white/90 tracking-tight">{user}</h4>
@@ -109,14 +138,22 @@ const PostCard = ({ type, user, time, content, image, tags, poll, delay, gridIma
 
     {image && !gridImages && (
       <div className="relative group rounded-3xl overflow-hidden mb-8 border border-white/10">
-        <img src={image} alt="post" className="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110" />
+        <img 
+          src={image} 
+          alt="post" 
+          className="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110" 
+          loading="lazy"
+          onError={(e) => { e.target.src = 'https://via.placeholder.com/1000x600/0A0A0C/39FF14?text=Campus+Connect' }}
+        />
         {type === 'video' && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm transition-all group-hover:backdrop-blur-0">
             <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center border border-white/40 backdrop-blur-xl group-hover:scale-110 transition-transform">
               <Play size={32} className="text-white fill-white ml-1" />
             </div>
             <div className="absolute bottom-6 left-6 right-6 flex justify-between items-center">
-               <button className="glass-btn text-xs font-bold text-white py-2 px-6">Join Event</button>
+               <button className="py-3 px-8 bg-neon-cyan text-black font-bold text-sm rounded-full hover:bg-white transition-all transform hover:scale-105 shadow-lg shadow-neon-cyan/30">
+                 Join Event
+               </button>
             </div>
           </div>
         )}
@@ -153,10 +190,10 @@ const PostCard = ({ type, user, time, content, image, tags, poll, delay, gridIma
     )}
 
     <div className="flex items-center gap-4 mt-auto">
-      <button className="flex-1 py-3 px-6 rounded-full bg-white/5 border border-white/10 text-white/80 text-xs font-bold hover:bg-neon-magenta/20 hover:border-neon-magenta/50 hover:text-neon-magenta transition-all flex items-center justify-center gap-2 group">
+      <button className="flex-1 py-3 px-6 rounded-full bg-white/5 border border-white/10 text-white/80 text-xs font-bold hover:bg-white/20 hover:border-white/30 hover:text-white transition-all flex items-center justify-center gap-2 group">
         <Heart size={16} className="group-hover:fill-neon-magenta transition-all" /> Like (124)
       </button>
-      <button className="flex-1 py-3 px-6 rounded-full bg-white/5 border border-white/10 text-white/80 text-xs font-bold hover:bg-neon-cyan/20 hover:border-neon-cyan/50 hover:text-neon-cyan transition-all flex items-center justify-center gap-2 group">
+      <button className="flex-1 py-3 px-6 rounded-full bg-white/5 border border-white/10 text-white/80 text-xs font-bold hover:bg-white/20 hover:border-white/30 hover:text-white transition-all flex items-center justify-center gap-2 group">
         <MessageCircle size={16} className="group-hover:fill-neon-cyan transition-all" /> Comment (32)
       </button>
       <button className="p-3 rounded-full bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white transition-all">
@@ -168,61 +205,64 @@ const PostCard = ({ type, user, time, content, image, tags, poll, delay, gridIma
 
 export default function App() {
   return (
-    <div className="min-h-screen pl-40 pr-20 py-20 font-['Inter'] text-white">
+    <div className="min-h-screen pl-40 pr-8 py-20 font-['Inter'] text-white">
       <AuroraBackground />
+      <WaveBackground />
+      
+      {/* Floating Background Orbs */}
+      <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
+        <div className="absolute w-[600px] h-[600px] bg-neon-violet/10 rounded-full blur-3xl animate-float-slow top-[-10%] left-[-20%]"></div>
+        <div className="absolute w-[400px] h-[400px] bg-neon-cyan/10 rounded-full blur-3xl animate-float-slower bottom-[-10%] right-[-10%]"></div>
+        <div className="absolute w-[300px] h-[300px] bg-neon-magenta/10 rounded-full blur-3xl animate-float-medium top-[50%] left-[30%]"></div>
+      </div>
+
       <Sidebar />
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-lg mx-auto">
         <Header />
         
-        <div className="grid grid-cols-2 gap-12 items-start">
-          {/* Column 1 */}
-          <div className="space-y-12">
-            <PostCard 
-              user="Alex Rivera"
-              time="2 hours ago"
-              content="Late night study session in the library. Good luck on finals! #CampusLife #StudyHard"
-              image="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=1000"
-              tags={["CampusLife", "StudyHard"]}
-              delay={0.2}
-            />
-            
-            <PostCard 
-              user="Campus Foodies"
-              time="8 hours ago"
-              content="Which dining hall is serving the best food today?"
-              poll={[
-                { label: "North Hall", value: 35 },
-                { label: "South Commons", value: 22 },
-                { label: "The Hub", value: 0 }
-              ]}
-              delay={0.4}
-            />
-          </div>
+        <div className="flex flex-col items-center gap-12">
+          <PostCard 
+            user="Alex Rivera"
+            time="2 hours ago"
+            content="Late night study session in the library. Good luck on finals! #CampusLife #StudyHard"
+            image="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=1000"
+            tags={["CampusLife", "StudyHard"]}
+            delay={0.1}
+          />
+          
+          <PostCard 
+            user="Campus Foodies"
+            time="8 hours ago"
+            content="Which dining hall is serving the best food today?"
+            poll={[
+              { label: "North Hall", value: 35 },
+              { label: "South Commons", value: 22 },
+              { label: "The Hub", value: 0 }
+            ]}
+            delay={0.2}
+          />
 
-          {/* Column 2 */}
-          <div className="space-y-12 pt-20">
-            <PostCard 
-              type="video"
-              user="Campus Music Club"
-              time="4 hours ago"
-              content="Live Music Performance at the Quad. Tomorrow, 8 PM"
-              image="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=1000"
-              delay={0.3}
-            />
+          <PostCard 
+            type="video"
+            user="Campus Music Club"
+            time="4 hours ago"
+            content="Live Music Performance at the Quad. Tomorrow, 6 PM"
+            image="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=1000"
+            delay={0.3}
+          />
 
-            <PostCard 
-              user="Mia Chen, Arts Major"
-              time="8 hours ago"
-              content="Just finished the new art installation in the main hall. Check it out! It's interactive."
-              tags={["ArtClub", "Installation"]}
-              gridImages={[
-                "https://images.unsplash.com/photo-1554188248-986adbb73be4?auto=format&fit=crop&q=80&w=500",
-                "https://images.unsplash.com/photo-1561214115-f2f134cc4912?auto=format&fit=crop&q=80&w=500",
-                "https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&q=80&w=500"
-              ]}
-              delay={0.5}
-            />
-          </div>
+          <PostCard 
+            user="Mia Chen, Arts Major"
+            time="6 hours ago"
+            content="Just finished the new art installation in the main hall. Check it out! It's interactive."
+            tags={["ArtClub", "Installation"]}
+            gridImages={[
+              "https://images.unsplash.com/photo-1554188248-986adbb73be4?auto=format&fit=crop&q=80&w=500",
+              "https://images.unsplash.com/photo-1561214115-f2f134cc4912?auto=format&fit=crop&q=80&w=500",
+              "https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&q=80&w=500"
+            ]}
+            delay={0.4}
+          />
         </div>
 
         <footer className="mt-32 amorphic-glass p-12 text-center border-white/5">

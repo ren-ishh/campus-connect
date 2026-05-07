@@ -13,9 +13,9 @@ export default {
           border: "rgba(255, 255, 255, 0.1)",
         },
         neon: {
-          cyan: "#00F5FF",
-          magenta: "#FF00E5",
-          violet: "#8A2BE2",
+          cyan: "#39FF14",
+          magenta: "#FF6B00",
+          violet: "#6A0DAD",
         }
       },
       backdropBlur: {
