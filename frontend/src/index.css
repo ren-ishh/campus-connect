@@ -1,16 +1,21 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color-scheme: dark;
+  background: #05060a;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
-  padding: 0;
+  min-height: 100vh;
   overflow-x: hidden;
-  background: #07080f;
+  background: #05060a;
+  color: #fff;
 }
 
 * {
@@ -18,22 +23,129 @@ body {
 }
 
 a {
+  color: inherit;
   text-decoration: none;
 }
 
-button {
-  border: none;
-  outline: none;
-  font-family: inherit;
-  transition: all 0.2s ease;
+button,
+input,
+textarea,
+select {
+  font: inherit;
 }
 
-button:hover {
+::selection {
+  background: rgba(103, 232, 249, 0.34);
+  color: white;
+}
+
+.glass-panel {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+}
+
+.glass-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.08) 30%, rgba(255, 255, 255, 0) 58%);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.glass-panel::after {
+  content: "";
+  position: absolute;
+  inset: -35% -20% auto auto;
+  width: 70%;
+  height: 70%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 68%);
+  filter: blur(26px);
+  pointer-events: none;
+  transform: rotate(14deg);
+}
+
+.glass-button {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 16px 42px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+
+.glass-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 55%);
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.glass-button:hover {
   transform: translateY(-1px);
-  filter: brightness(1.1);
+  border-color: rgba(255, 255, 255, 0.24);
 }
 
-@keyframes glowBorder {
-  0% { background-position: 0% 0%; }
-  100% { background-position: 200% 0%; }
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(22px, -18px, 0) scale(1.04);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes sheen {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+.animate-drift {
+  animation: drift 18s ease-in-out infinite alternate;
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+}
+
+.animate-sheen {
+  animation: sheen 9s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
